@@ -30,5 +30,10 @@ pipeline {
                 sh 'mvn package'
             }
         }
+        stage('Running the artifact') {
+            steps {
+                sh 'mvn spring-boot:run'
+            }
+        }
     }
 }
