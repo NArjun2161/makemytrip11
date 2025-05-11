@@ -48,14 +48,13 @@ pipeline {
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
                         script {
-                            // Use SonarScanner defined in Jenkins tool configuration
-                            def sonarScanner = tool name: 'SonarScanner', type: 'ToolType'
+                            // Correct tool type used here
+                            def sonarScanner = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
                             sh """
                                 ${sonarScanner}/bin/sonar-scanner \
                                   -Dsonar.projectKey=newProject \
                                   -Dsonar.sources=src \
                                   -Dsonar.java.binaries=target/classes \
-                                  -Dsonar.java.libraries=target/dependency \
                                   -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                                   -Dsonar.host.url=http://192.168.217.155:9000 \
                                   -Dsonar.login=${SONAR_TOKEN}
@@ -103,7 +102,7 @@ pipeline {
 
                     // Deploy the app locally (runs it in background)
                     sh """
-                        nohup java -jar ${jarFile} --server.port=9090 > app.log 2>&1 &
+                        nohup java -jar ${jarFile} --server.port=9090 > app.log 2>&1 & 
                         echo "App started on port 9090"
                     """
                 }
