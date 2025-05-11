@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         M2_HOME = '/usr/share/maven'
-        SONARQUBE_ENV = 'SONAR_SCANNER_HOME' // Match with Jenkins config
+        SONARQUBE_ENV = 'SONAR_SCANNER_HOME' // Match Jenkins SonarQube server name
     }
 
     stages {
@@ -51,15 +51,17 @@ pipeline {
             steps {
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-                        sh """
-                            sonar-scanner \
-                              -Dsonar.projectKey=FinalPipeline \
-                              -Dsonar.sources=src \
-                              -Dsonar.java.binaries=target/classes \
-                              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                              -Dsonar.host.url=http://192.168.217.155:9000 \
-                              -Dsonar.login=${SONAR_TOKEN}
-                        """
+                        withEnv(["SONAR_AUTH=${SONAR_TOKEN}"]) {
+                            sh '''
+                                sonar-scanner \
+                                  -Dsonar.projectKey=FinalPipeline \
+                                  -Dsonar.sources=src \
+                                  -Dsonar.java.binaries=target/classes \
+                                  -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                                  -Dsonar.host.url=http://192.168.217.155:9000 \
+                                  -Dsonar.login=$SONAR_AUTH
+                            '''
+                        }
                     }
                 }
             }
