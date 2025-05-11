@@ -2,16 +2,15 @@ pipeline {
     agent any
 
     stages {
-        stage('version Check') {
+        stage('Version Check') {
             steps {
                 sh '''
-                git -v
+                git --version
                 mvn -v 
                 java --version
                 '''
             }
         }
-        
 
         stage('Compile') {
             steps {
@@ -30,9 +29,13 @@ pipeline {
                 sh 'mvn package'
             }
         }
-        stage('Running the artifact') {
+
+        stage('Run Artifact on Port 9090') {
             steps {
-                sh 'mvn spring-boot:run'
+                sh '''
+                JAR_FILE=$(ls target/*.jar | head -n 1)
+                java -jar "$JAR_FILE" --server.port=9090
+                '''
             }
         }
     }
