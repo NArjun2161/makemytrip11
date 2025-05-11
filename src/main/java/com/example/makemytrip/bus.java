@@ -3,7 +3,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class Welcome {
-    @GetMapping("/")
-    public String getData() {return  "Welcome Devops Project" ; }
+public class bus {
+    @GetMapping("/bus")
+    public String getData() {return  "Please book your Trains" ; }
 }
