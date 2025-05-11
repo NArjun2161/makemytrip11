@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        M2_HOME = '/usr/share/maven'                         // Maven home
-        SONARQUBE_ENV = 'MySonarQubeServer'                  // SonarQube server name from Jenkins config
+        M2_HOME = '/usr/share/maven'
+        SONARQUBE_ENV = 'SONAR_SCANNER_HOME' // Match with Jenkins config
     }
 
     stages {
@@ -25,17 +25,23 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/NArjun2161/makemytrip11.git'
+                git url: 'https://github.com/NArjun2161/makemytrip26.git'
             }
         }
 
-        stage('Build and Test') {
+        stage('Build') {
             steps {
-                sh 'mvn clean verify'
+                sh 'mvn compile'
             }
         }
 
-        stage('Generate JaCoCo Report') {
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Jacoco Report') {
             steps {
                 sh 'mvn jacoco:report'
             }
@@ -45,18 +51,15 @@ pipeline {
             steps {
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
-                        script {
-                            def sonarScanner = tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarScannerInstallation'
-                            sh """
-                                ${sonarScanner}/bin/sonar-scanner \
-                                  -Dsonar.projectKey=FinalPipeline  // <-- Your SonarQube Project Key
-                                  -Dsonar.sources=src \
-                                  -Dsonar.java.binaries=target/classes \
-                                  -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
-                                  -Dsonar.host.url=http://192.168.217.155:9000 \
-                                  -Dsonar.login=${SONAR_TOKEN}
-                            """
-                        }
+                        sh """
+                            sonar-scanner \
+                              -Dsonar.projectKey=FinalPipeline \
+                              -Dsonar.sources=src \
+                              -Dsonar.java.binaries=target/classes \
+                              -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                              -Dsonar.host.url=http://192.168.217.155:9000 \
+                              -Dsonar.login=${SONAR_TOKEN}
+                        """
                     }
                 }
             }
@@ -70,7 +73,7 @@ pipeline {
             }
         }
 
-        stage('Package') {
+        stage('Clean and Package') {
             steps {
                 sh 'mvn clean package'
             }
