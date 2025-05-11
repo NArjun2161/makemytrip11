@@ -2,32 +2,39 @@ pipeline {
     agent any
 
     tools {
-        maven 'Maven 3.9.9' // Use the Maven version installed in Jenkins (name must match Jenkins config)
-       
+        maven 'Maven 3.9.9' // Make sure this name matches what's configured in Jenkins
     }
 
     stages {
         stage('Clean') {
             steps {
-                sh 'mvn clean'
+                script {
+                    sh 'mvn clean'
+                }
             }
         }
 
         stage('Compile') {
             steps {
-                sh 'mvn compile'
+                script {
+                    sh 'mvn compile'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                script {
+                    sh 'mvn test'
+                }
             }
         }
 
         stage('Package') {
             steps {
-                sh 'mvn package'
+                script {
+                    sh 'mvn package'
+                }
             }
         }
 
@@ -40,10 +47,10 @@ pipeline {
 
     post {
         success {
-            echo 'Build and tests passed.'
+            echo '✅ Build and tests passed.'
         }
         failure {
-            echo 'Build failed.'
+            echo '❌ Build failed.'
         }
     }
 }
