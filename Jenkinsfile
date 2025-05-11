@@ -1,16 +1,23 @@
-pipeline{
-	agent any
-	stages{
-		steps ('compile'){
-			sh 'mvn clean compile'
-		}
-		steps ('test'){
-			sh 'mvn clean test'
-		}
+pipeline {
+    agent any
 
-		steps ('package'){
-			sh 'mvn clean package'
-		}
+    stages {
+        stage('Compile') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
 
-	}
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Package') {
+            steps {
+                sh 'mvn package'
+            }
+        }
+    }
 }
