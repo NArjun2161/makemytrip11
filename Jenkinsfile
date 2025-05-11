@@ -25,7 +25,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/NArjun2161/makemytrip26.git'
+                git url: 'https://github.com/NArjun2161/makemytrip11.git'
             }
         }
 
