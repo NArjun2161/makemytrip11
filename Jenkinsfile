@@ -2,19 +2,19 @@ pipeline {
     agent any
 
     environment {
-        M2_HOME = '/usr/share/maven'                          // Maven home
-        SONARQUBE_ENV = 'MySonarQubeServer'                   // SonarQube server name from Jenkins config
-        DOCKER_IMAGE = 'arjun1421/makemytrip11'               // Docker image name
-        DOCKER_TAG = 'latest'                                 // Docker tag
+        M2_HOME = '/usr/share/maven'                         // Maven home
+        SONARQUBE_ENV = 'MySonarQubeServer'                  // SonarQube server name from Jenkins config
+        DOCKER_IMAGE = 'arjun1421/makemytrip11'              // Docker image name
+        DOCKER_TAG = 'latest'                                // Docker tag
     }
 
     stages {
         stage('Checking Versions of Tools') {
             steps {
                 sh '''
-                    echo "✅ Git Version:" && git --version
-                    echo "✅ Maven Version:" && mvn -v
-                    echo "✅ Java Version:" && java --version
+                    git --version
+                    mvn -v
+                    java --version
                 '''
             }
         }
@@ -51,7 +51,7 @@ pipeline {
                             def sonarScanner = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarScannerInstallation'
                             sh """
                                 ${sonarScanner}/bin/sonar-scanner \
-                                  -Dsonar.projectKey=makemytrip11 \
+                                  -Dsonar.projectKey=FinalPipeline  // <-- Updated project key
                                   -Dsonar.sources=src \
                                   -Dsonar.java.binaries=target/classes \
                                   -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
@@ -97,7 +97,7 @@ pipeline {
                     sh 'pkill -f "makemytrip.*.jar" || true'
                     sh """
                         nohup java -jar ${jarFile} --server.port=9090 > app.log 2>&1 & 
-                        echo "✅ App started on port 9090"
+                        echo "App started on port 9090"
                     """
                 }
             }
