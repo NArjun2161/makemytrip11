@@ -48,8 +48,8 @@ pipeline {
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
                         script {
-                            // Using Jenkins tool for SonarScanner if available
-                            def sonarScanner = tool name: 'SonarScanner', type: 'ToolType' 
+                            // Use SonarScanner defined in Jenkins tool configuration
+                            def sonarScanner = tool name: 'SonarScanner', type: 'ToolType'
                             sh """
                                 ${sonarScanner}/bin/sonar-scanner \
                                   -Dsonar.projectKey=newProject \
@@ -58,7 +58,7 @@ pipeline {
                                   -Dsonar.java.libraries=target/dependency \
                                   -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
                                   -Dsonar.host.url=http://192.168.217.155:9000 \
-                                  -Dsonar.login=$SONAR_TOKEN
+                                  -Dsonar.login=${SONAR_TOKEN}
                             """
                         }
                     }
