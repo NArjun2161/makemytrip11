@@ -50,7 +50,7 @@ pipeline {
             echo '✅ Build and tests passed.'
         }
         failure {
-            echo '❌ Build failed.'
+            echo '❌ Build failed..'
         }
     }
 }
