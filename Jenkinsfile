@@ -4,14 +4,12 @@ pipeline {
     environment {
         M2_HOME = '/usr/share/maven'                         // Maven home
         SONARQUBE_ENV = 'MySonarQubeServer'                  // SonarQube server name from Jenkins config
-        DOCKER_IMAGE = 'arjun1421/makemytrip11'              // Docker image name
-        DOCKER_TAG = 'latest'                                // Docker tag
     }
 
     stages {
         stage('Checking Versions of Tools') {
             steps {
-                sh '''
+                sh ''' 
                     git --version
                     mvn -v
                     java --version
@@ -27,7 +25,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/NArjun2161/makemytrip11.git'
+                git url: 'https://github.com/NArjun2161/makemytrip26.git'
             }
         }
 
@@ -48,10 +46,10 @@ pipeline {
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
                         script {
-                            def sonarScanner = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarScannerInstallation'
+                            def sonarScanner = tool name: 'SonarQube Scanner', type: 'hudson.plugins.sonar.SonarScannerInstallation'
                             sh """
                                 ${sonarScanner}/bin/sonar-scanner \
-                                  -Dsonar.projectKey=FinalPipeline  // <-- Updated project key
+                                  -Dsonar.projectKey=FinalPipeline  // <-- Your SonarQube Project Key
                                   -Dsonar.sources=src \
                                   -Dsonar.java.binaries=target/classes \
                                   -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
@@ -92,14 +90,11 @@ pipeline {
 
         stage('Deploy (Local Run)') {
             steps {
-                script {
-                    def jarFile = "${env.WORKSPACE}/target/makemytrip-0.0.1-SNAPSHOT.jar"
-                    sh 'pkill -f "makemytrip.*.jar" || true'
-                    sh """
-                        nohup java -jar ${jarFile} --server.port=9090 > app.log 2>&1 & 
-                        echo "App started on port 9090"
-                    """
-                }
+                sh '''
+                    pkill -f "makemytrip.*.jar" || true
+                    nohup java -jar target/makemytrip-0.0.1-SNAPSHOT.jar --server.port=9090 > app.log 2>&1 &
+                    echo "App started on port 9090"
+                '''
             }
         }
 
