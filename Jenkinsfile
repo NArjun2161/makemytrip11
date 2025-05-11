@@ -4,7 +4,7 @@ pipeline {
     environment {
         M2_HOME = '/usr/share/maven'        // Maven home
         SONARQUBE_ENV = 'MySonarQubeServer'  // SonarQube server name
-        DOCKER_IMAGE = 'your-dockerhub-user/myapp' // Docker image name (replace with your Docker Hub user/repo)
+        DOCKER_IMAGE = 'arjun1421/makemytrip11' // Docker image name (replace with your Docker Hub user/repo)
         DOCKER_TAG = 'latest' // Docker image tag
     }
 
@@ -27,7 +27,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git url: 'https://github.com/NArjun2161/makemytrip26.git'
+                git url: 'https://github.com/NArjun2161/makemytrip11.git'
             }
         }
 
