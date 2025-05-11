@@ -34,7 +34,8 @@ pipeline {
             steps {
                 sh '''
                 JAR_FILE=$(ls target/*.jar | head -n 1)
-                java -jar "$JAR_FILE" --server.port=9090
+                nohup java -jar "$JAR_FILE" --server.port=9090 > app.log 2>&1 &
+                echo $! > pid.txt
                 '''
             }
         }
