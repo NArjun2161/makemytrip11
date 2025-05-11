@@ -2,16 +2,16 @@ pipeline {
     agent any
 
     environment {
-        M2_HOME = '/usr/share/maven'        // Maven home
-        SONARQUBE_ENV = 'MySonarQubeServer'  // SonarQube server name
-        DOCKER_IMAGE = 'arjun1421/makemytrip11' // Docker image name (replace with your Docker Hub user/repo)
-        DOCKER_TAG = 'latest' // Docker image tag
+        M2_HOME = '/usr/share/maven'                         // Maven home
+        SONARQUBE_ENV = 'MySonarQubeServer'                  // SonarQube server name from Jenkins config
+        DOCKER_IMAGE = 'arjun1421/makemytrip11'              // Docker image name
+        DOCKER_TAG = 'latest'                                // Docker tag
     }
 
     stages {
         stage('Checking Versions of Tools') {
             steps {
-                sh ''' 
+                sh '''
                     git --version
                     mvn -v
                     java --version
@@ -48,8 +48,7 @@ pipeline {
                 withSonarQubeEnv("${SONARQUBE_ENV}") {
                     withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
                         script {
-                            // Correct tool type used here
-                            def sonarScanner = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarRunnerInstallation'
+                            def sonarScanner = tool name: 'SonarScanner', type: 'hudson.plugins.sonar.SonarScannerInstallation'
                             sh """
                                 ${sonarScanner}/bin/sonar-scanner \
                                   -Dsonar.projectKey=newProject \
@@ -94,13 +93,8 @@ pipeline {
         stage('Deploy (Local Run)') {
             steps {
                 script {
-                    // Dynamically reference the workspace folder
                     def jarFile = "${env.WORKSPACE}/target/makemytrip-0.0.1-SNAPSHOT.jar"
-
-                    // Stop the running app, if any
                     sh 'pkill -f "makemytrip.*.jar" || true'
-
-                    // Deploy the app locally (runs it in background)
                     sh """
                         nohup java -jar ${jarFile} --server.port=9090 > app.log 2>&1 & 
                         echo "App started on port 9090"
